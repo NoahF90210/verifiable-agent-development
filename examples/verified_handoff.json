@@ -1,0 +1,92 @@
+{
+  "schema_version": "1.0",
+  "handoff_id": "portfolio-reference-01",
+  "implementation_owner": {
+    "role": "implementation owner",
+    "worker_handle": "worker-example-01",
+    "worktree": "worktrees/portfolio-reference",
+    "exclusive": true
+  },
+  "artifacts": [
+    {
+      "id": "validator-source",
+      "path": "vadf/validator.py",
+      "kind": "source",
+      "status": "created",
+      "description": "Deterministic handoff contract validator."
+    },
+    {
+      "id": "validator-tests",
+      "path": "tests/test_validator.py",
+      "kind": "test",
+      "status": "created",
+      "description": "Unit and CLI coverage for accepted and rejected manifests."
+    },
+    {
+      "id": "architecture-doc",
+      "path": "docs/architecture.md",
+      "kind": "documentation",
+      "status": "created",
+      "description": "Public-safe role and state boundary reference."
+    }
+  ],
+  "verification": {
+    "overall_status": "passed",
+    "checks": [
+      {
+        "id": "unit-tests",
+        "command": "python -m unittest discover -s tests -v",
+        "outcome": "passed",
+        "evidence": "The manifest author attests that the standard-library test suite completed with zero failures."
+      },
+      {
+        "id": "valid-cli",
+        "command": "python -m vadf validate examples/verified_handoff.json",
+        "outcome": "passed",
+        "evidence": "The manifest author attests that the command returned exit code 0 and printed a CONTRACT VALID summary."
+      }
+    ]
+  },
+  "claims": [
+    {
+      "id": "deterministic-validation",
+      "text": "The reference implementation validates handoff structure without network access.",
+      "status": "supported",
+      "evidence": [
+        "artifact:validator-source",
+        "artifact:validator-tests",
+        "check:unit-tests",
+        "path:examples/verified_handoff.json"
+      ],
+      "included_in_output": true
+    },
+    {
+      "id": "semantic-guarantee",
+      "text": "The validator guarantees that every evidence reference semantically proves its claim.",
+      "status": "blocked",
+      "evidence": [],
+      "included_in_output": false
+    }
+  ],
+  "residual_risks": [
+    {
+      "id": "reference-scope",
+      "description": "The validator checks contract structure but does not execute recorded commands or prove evidence meaning.",
+      "disposition": "accepted",
+      "mitigation": "The documentation labels the repository as a sanitized reference implementation."
+    }
+  ],
+  "recovery": {
+    "mode": "same_session_same_worktree",
+    "outcome": "recovered",
+    "notes": "The manifest author attests that work resumed without changing the implementation owner or worktree."
+  },
+  "privacy_review": {
+    "status": "passed",
+    "checks": [
+      "The manifest author attests that no credentials or contact details are present.",
+      "The manifest author attests that all repository paths are relative and sanitized.",
+      "The manifest author attests that no private prompts or messages are included."
+    ]
+  }
+}

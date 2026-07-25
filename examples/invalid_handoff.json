@@ -1,0 +1,55 @@
+{
+  "schema_version": "0.8",
+  "handoff_id": "Invalid Handoff",
+  "implementation_owner": {
+    "role": "",
+    "worker_handle": "worker example",
+    "worktree": "../shared-worktree",
+    "exclusive": false
+  },
+  "artifacts": [
+    {
+      "path": "../private-output.txt",
+      "kind": "log",
+      "status": "planned",
+      "description": ""
+    }
+  ],
+  "verification": {
+    "overall_status": "failed",
+    "checks": [
+      {
+        "id": "tests",
+        "command": "python -m unittest",
+        "outcome": "not_run",
+        "evidence": ""
+      }
+    ]
+  },
+  "claims": [
+    {
+      "id": "unsupported-metric",
+      "text": "The workflow guarantees a measured performance improvement.",
+      "status": "blocked",
+      "evidence": [],
+      "included_in_output": true
+    }
+  ],
+  "residual_risks": [
+    {
+      "id": "open-risk",
+      "description": "",
+      "disposition": "unknown",
+      "mitigation": ""
+    }
+  ],
+  "recovery": {
+    "mode": "different_worktree",
+    "outcome": "unknown",
+    "notes": ""
+  },
+  "privacy_review": {
+    "status": "failed",
+    "checks": []
+  }
+}

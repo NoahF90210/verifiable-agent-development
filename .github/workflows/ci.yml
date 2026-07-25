@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Run unit tests
+        run: python -m unittest discover -s tests -v
+
+      - name: Validate accepted example
+        run: python -m vadf validate examples/verified_handoff.json
+
+      - name: Confirm rejected example fails contract validation
+        shell: bash
+        run: |
+          if python -m vadf validate examples/invalid_handoff.json; then
+            echo "The deliberately invalid manifest was accepted."
+            exit 1
+          else
+            status=$?
+          fi
+          test "$status" -eq 1
+
+      - name: Check local Markdown links
+        run: python scripts/check_markdown_links.py
+
+      - name: Check publication rules
+        run: python scripts/check_publication_rules.py
