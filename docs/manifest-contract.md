@@ -39,7 +39,6 @@ Duplicate object keys are rejected before contract validation because standard J
 | `privacy_review` | Must contain a `passed` attestation and at least one recorded review check. |
 
 Unknown fields are rejected at every object level.
-This rule makes accidental schema drift visible to the implementation owner and reviewer.
 
 ## Ownership rules
 
@@ -76,10 +75,9 @@ Every evidence entry must use one of these forms.
 - `check:<id>` must reference a verification-check identifier declared in the same manifest.
 - `path:<repository-relative-path>` must contain a safe repository-relative path.
 
-These rules form an evidence-reference and status-consistency gate.
-They prevent dangling identifiers, unsafe path references, empty supported-claim records, missing limitations, and blocked claims marked for output.
-They do not determine whether a referenced artifact, check, or path semantically proves the claim.
-Human review must inspect the actual evidence and wording.
+These rules reject undeclared artifact or check identifiers, unsafe path syntax, supported claims without references, missing limitations, and blocked claims marked for output.
+Path references do not need to name a declared artifact, and the validator does not check that the file exists.
+Reviewers must inspect the referenced content and decide whether it supports the claim.
 
 ## Privacy-review records
 

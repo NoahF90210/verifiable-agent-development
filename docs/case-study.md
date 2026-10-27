@@ -4,16 +4,15 @@
 
 This document presents a sanitized architectural scenario for applying the framework to resume generation.
 The public repository does not include a resume optimizer, resume data, PDF renderer, private prompts, employer contacts, or evidence of private execution history.
-The claim-handling and transactional PDF sections describe policy boundaries rather than public implemented features.
+Claim review and PDF QA below are proposed policies, not implemented features.
 
-## Why verification policy matters
+## Risks
 
 Resume generation creates two distinct risks.
 A language model can introduce a persuasive claim without an approved evidence reference.
 A technically readable PDF can still contain clipped text, missing content, or an unintended page count.
 
-The architectural policy addresses those risks with separate claim-record and document-quality gates.
-Passing one gate does not substitute for passing the other.
+Claim review and document QA address separate risks; both are required.
 
 ## Proposed supervised flow
 
@@ -25,7 +24,7 @@ Passing one gate does not substitute for passing the other.
 6. Automated and visual checks inspect the candidate before promotion.
 7. The handoff records changed files, command and outcome attestations, evidence references, recovery state, privacy-review attestations, and remaining risks.
 
-## Evidence-reference and status-consistency gate
+## Claim review
 
 Each material claim is classified as `supported`, `limited`, or `blocked`.
 A supported claim includes at least one structured evidence reference.
@@ -34,10 +33,8 @@ A blocked claim is excluded from generated output.
 
 Evidence references can identify a declared artifact, identify a declared verification check, or provide a safe repository-relative path.
 The public validator checks that reference syntax is safe and that artifact or check identifiers resolve within the manifest.
-It also checks that supported records are nonempty, limited records contain a limitation, and blocked records are excluded from output.
-
-This mechanism is an evidence-reference and status-consistency gate.
-It does not determine factual truth or semantic support.
+It also requires evidence references for supported claims, a limitation for limited claims, and `included_in_output: false` for blocked claims.
+It does not inspect generated output or determine factual truth.
 A human reviewer must inspect the referenced material and decide whether it supports the exact wording.
 
 ## Transactional PDF QA policy
@@ -46,7 +43,7 @@ The policy treats a newly rendered PDF as a candidate artifact rather than an im
 The implementation owner writes the candidate to a temporary location, runs the required QA checks, and promotes it only after every required check passes.
 If a check fails or execution is interrupted, the previously accepted PDF remains unchanged.
 
-The proposed QA transaction can include these checks.
+Proposed checks include:
 
 - The PDF opens successfully and has the expected page count.
 - Required text can be extracted from the rendered document.
@@ -67,10 +64,11 @@ The handoff records the recovery outcome and any residual uncertainty as author 
 Same-worktree recovery preserves the relationship among the candidate artifact, source revision, and available check records.
 If ownership or repository state cannot be established, the safe policy is to stop and begin a new explicitly owned effort.
 
-## Public evidence available here
+## Public evidence
 
-The public reference implementation demonstrates duplicate-key rejection, UTF-8 input handling, evidence-reference validation, status-consistency checks, deterministic errors, accepted and rejected manifests, publication scanning, and automated tests.
-The repository does not present private use history, hiring outcomes, development-speed claims, defect-rate claims, cost claims, accuracy claims, revenue claims, or user-adoption claims.
+The [validator and CLI tests](../tests/test_validator.py) cover input handling, evidence-reference rules, and status consistency.
+The [example manifests](../examples/README.md) illustrate accepted and rejected records.
+These checks do not establish that a resume was generated, reviewed, or used.
 
 ## Related documentation
 
