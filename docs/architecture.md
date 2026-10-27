@@ -2,10 +2,10 @@
 
 ## Scope
 
-The Verifiable Agent Development Framework is a supervised coordination pattern for software changes that need explicit ownership, inspectable evidence references, recoverable execution, and bounded claims.
+The workflow assigns ownership of software changes and records the evidence, recovery state, and remaining risks for review.
 This repository implements a deterministic handoff validator, test suite, publication checker, link checker, examples, and CI configuration.
 The role model, recovery flow, and transactional artifact policies are documented architecture rather than fully implemented orchestration code.
-The private source environment and its application history are not part of the public evidence surface.
+The private source environment and its application history are not included.
 
 ## Role boundaries
 
@@ -43,15 +43,14 @@ sequenceDiagram
     end
 ```
 
-## Worktree ownership invariant
+## Worktree ownership
 
 A worktree has one implementation owner for the active change.
 The manifest records an opaque worker handle, a sanitized repository-relative worktree identifier, and an `exclusive` flag.
 The validator requires `exclusive` to be `true`.
-This invariant avoids merge-like conflicts inside an active worktree and makes recovery ownership clear.
+The validator checks this declaration; it does not manage worktrees, inspect active writers, or enforce exclusive access.
 
-The framework can coordinate multiple worktrees, but each worktree keeps its own owner, artifacts, and verification record.
-Coordination does not imply unrestricted agent autonomy.
+Under this policy, each worktree has its own owner, artifacts, and verification record.
 
 ## State boundaries
 
@@ -63,8 +62,7 @@ Coordination does not imply unrestricted agent autonomy.
 | Task artifacts | Plans, designs, reviews, handoffs, and check evidence for one effort | Task-scoped retention and sanitization before public use |
 | Session history | Conversational context and execution history | Recovery and traceability support rather than current-project authority |
 
-The boundaries prevent a temporary task detail from becoming durable memory by accident.
-They also prevent repository-specific instructions from being hidden inside a private conversation.
+Keep temporary task details out of durable memory and repository instructions in the repository.
 
 ## Handoff contract
 
@@ -81,7 +79,7 @@ A contract-valid handoff contains these top-level records.
 The validator does not execute recorded commands, reproduce outcomes, inspect referenced evidence content, or independently perform the recorded privacy review.
 It checks the shape, allowed values, cross-references, and status consistency of those attestations.
 The validator rejects unknown fields so schema drift is visible.
-It also reports every detected error in stable traversal order rather than stopping at the first failure.
+It collects detected errors rather than stopping at the first failure.
 See the [manifest contract](manifest-contract.md) for field-level rules.
 
 ## Evidence-reference and status boundary
@@ -92,9 +90,9 @@ A blocked claim must not be marked as included in output.
 Artifact and check references must resolve to identifiers declared in the same manifest.
 Path references must use a safe repository-relative form.
 
-The gate validates reference shape, reference resolution, status consistency, and limitation presence.
-It does not determine whether the referenced material semantically proves the claim.
-That semantic review remains a human and verifier responsibility.
+The validator checks reference syntax, declared identifiers, status consistency, and required limitations.
+It does not check whether a path exists or whether the referenced material supports the claim.
+Reviewers must inspect the evidence and wording.
 
 ## Recovery
 
@@ -109,9 +107,8 @@ If the worktree is corrupted or ownership cannot be established, the safe action
 
 Repository test commands provide evidence only when a reviewer actually runs them and inspects the outcome.
 Manifest command strings and recorded outcomes are author attestations until independently repeated.
-The framework treats repository instructions as local policy after they are inspected.
-It treats agent summaries as navigation aids that require artifact or command evidence.
-It treats public documentation as a sanitized representation rather than evidence of a private source system.
+Repository instructions define local policy after inspection.
+Agent summaries point reviewers to artifacts and checks; they do not establish outcomes.
+Public documentation describes the sanitized reference, not the private source system.
 
 Human approval is required for release, external side effects, sensitive data handling, and acceptance of residual risk.
-No component is described as operating outside those approval boundaries.
